@@ -45,7 +45,7 @@ def gradient_descent(features, values, theta, alpha, num_iterations):
         
     return theta, pandas.Series(cost_history)
 
-def predictions(dataframe):
+def predictions(dataframe, non_dummy_features):
     '''
     The NYC turnstile data is stored in a pandas dataframe called weather_turnstile.
     Using the information stored in the dataframe, let's predict the ridership of
@@ -78,7 +78,7 @@ def predictions(dataframe):
     that it runs faster.
     '''
     # Select Features (try different features!)
-    features = dataframe[['hour', 'rain', 'tempi', 'meanpressurei',  'day_week', 'weekday']]
+    features = dataframe[non_dummy_features]
     
     # Add UNIT to features using dummy variables
     dummy_units = pandas.get_dummies(dataframe['UNIT'], prefix='unit')
@@ -109,7 +109,7 @@ def predictions(dataframe):
     
     plot = plot_cost_history(alpha, cost_history)    
     predictions = np.dot(features_array, theta_gradient_descent)
-    return predictions, plot
+    return predictions, values, features, theta_gradient_descent, plot
 
 
 def plot_cost_history(alpha, cost_history):
@@ -118,7 +118,7 @@ def plot_cost_history(alpha, cost_history):
       'Iteration': range(len(cost_history))
    })
    return ggplot(cost_df, aes('Iteration', 'Cost_History')) + \
-      geom_point() + ggtitle('Cost History for alpha = %.3f' % alpha )
+      geom_point(color="steelblue") + ggtitle('Cost History for alpha = %.3f' % alpha ) + geom_line(color="steelblue")
 
 def compute_r_squared(data, predictions):
     r_squared = 1. - np.sum(np.square(data - predictions)) / np.sum(np.square(data - np.mean(data)))    
